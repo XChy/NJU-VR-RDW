@@ -1,0 +1,16 @@
+public GameObject wallMarker;
+
+//检查边界是否已配置
+bool configured = OVRManager.boundary.GetConfigured();
+
+if (configured)
+{
+    //获取所有边界点。必须将BoundaryType设置为OuterBoundary
+    Vector3[] boundaryPoints = OVRManager.boundary.GetGeometry(OVRBoundary.BoundaryType.OuterBoundary);
+
+    //生成一堆高瘦的立方体来标记轮廓
+    foreach (Vector3 pos in boundaryPoints)
+    {
+        Instantiate(wallMarker, pos, Quaternion.identity);
+    }
+}
