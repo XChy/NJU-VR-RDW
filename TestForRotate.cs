@@ -7,6 +7,7 @@ public class TestForRotate : MonoBehaviour
 {
     public GameObject VRController;
     public GameObject VRTracker;
+    public GameObject wallMarker;
 
     private float prevYRotation = 0.0f;
     private Quaternion prevRotation;
@@ -19,6 +20,23 @@ public class TestForRotate : MonoBehaviour
 
     void Update()
     {
+
+
+        //æ£€æŸ¥è¾¹ç•Œæ˜¯å¦å·²é…ç½®
+        bool configured = OVRManager.boundary.GetConfigured();
+
+        if (configured)
+        {
+            //è·å–æ‰€æœ‰è¾¹ç•Œç‚¹ã€‚å¿…é¡»å°†BoundaryTypeè®¾ç½®ä¸ºOuterBoundary
+            Vector3[] boundaryPoints = OVRManager.boundary.GetGeometry(OVRBoundary.BoundaryType.OuterBoundary);
+
+            //ç”Ÿæˆä¸€å †é«˜ç˜¦çš„ç«‹æ–¹ä½“æ¥æ ‡è®°è½®å»“
+            foreach (Vector3 pos in boundaryPoints)
+            {
+                Instantiate(VRController, pos, Quaternion.identity);
+            }
+        }
+
         Quaternion currentRotation = VRController.transform.rotation;
 
         float currentYRotation = VRController.transform.eulerAngles.y;
@@ -32,22 +50,22 @@ public class TestForRotate : MonoBehaviour
             deltaY += 360;
         }
 
-        // ¼ÆËãĞéÄâÊÓ½ÇĞèÒªĞı×ªµÄ½Ç¶È
+        // è®¡ç®—è™šæ‹Ÿè§†è§’éœ€è¦æ—‹è½¬çš„è§’åº¦
         float virtualRotation = deltaY / 2.0f;
         float newY = VRTracker.transform.eulerAngles.y + virtualRotation;
 
 
-        // ´´½¨Ò»¸öĞÂµÄÅ·À­½Ç£¬²¢½«ĞéÄâĞı×ªÓ¦ÓÃÓÚyÖá
+        // åˆ›å»ºä¸€ä¸ªæ–°çš„æ¬§æ‹‰è§’ï¼Œå¹¶å°†è™šæ‹Ÿæ—‹è½¬åº”ç”¨äºyè½´
         Vector3 newEulerAngles = new Vector3(
             VRTracker.transform.eulerAngles.x,
             newY,
             VRTracker.transform.eulerAngles.z
         );
 
-        // ½«ĞÂµÄÅ·À­½ÇÓ¦ÓÃÓÚVRTracker¶ÔÏó
+        // å°†æ–°çš„æ¬§æ‹‰è§’åº”ç”¨äºVRTrackerå¯¹è±¡
         VRTracker.transform.eulerAngles = newEulerAngles;
 
-        // ¸üĞÂprevYRotation
+        // æ›´æ–°prevYRotation
         prevYRotation = currentYRotation;
         prevRotation = currentRotation;
     }
