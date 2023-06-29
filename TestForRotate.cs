@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class TestForRotate : MonoBehaviour
 {
@@ -12,33 +13,20 @@ public class TestForRotate : MonoBehaviour
     private float prevYRotation = 0.0f;
     private Quaternion prevRotation;
 
+    private OVRBoundary ovrBoundary;
+
     void Start()
     {
         prevYRotation = VRController.transform.eulerAngles.y;
         prevRotation = VRController.transform.rotation;
+
+        get_boundary_vertices();
     }
 
     void Update()
     {
-
-
-        //检查边界是否已配置
-        bool configured = OVRManager.boundary.GetConfigured();
-
-        if (configured)
-        {
-            //获取所有边界点。必须将BoundaryType设置为OuterBoundary
-            Vector3[] boundaryPoints = OVRManager.boundary.GetGeometry(OVRBoundary.BoundaryType.OuterBoundary);
-
-            //生成一堆高瘦的立方体来标记轮廓
-            foreach (Vector3 pos in boundaryPoints)
-            {
-                Instantiate(VRController, pos, Quaternion.identity);
-            }
-        }
-
         Quaternion currentRotation = VRController.transform.rotation;
-
+        
         float currentYRotation = VRController.transform.eulerAngles.y;
         float deltaY = currentYRotation - prevYRotation;
         if(deltaY > 180)
@@ -68,5 +56,29 @@ public class TestForRotate : MonoBehaviour
         // 更新prevYRotation
         prevYRotation = currentYRotation;
         prevRotation = currentRotation;
+    }
+
+    public void get_boundary_vertices()
+    {
+        List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
+        SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+
+        // make sure I actually have a subsystem loaded
+        if (subsystems.Count > 0)
+        {
+            // create a List of Vec3 that will be filled with the vertices
+            List<Vector3> boundaryPoints = new List<Vector3>();
+
+            // if this returns true, then the subsystems supports a boundary and it should have filled our list with them
+            if (subsystems[0].TryGetBoundaryPoints(boundaryPoints))
+            {
+                foreach (Vector3 pos in boundaryPoints)
+                {
+                    // TODO: do something sensible with the points, not this
+                    Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), pos, Quaternion.identity);
+                    Debug.Log("GET POINT:"+pos);
+                }
+            }
+        }
     }
 }
