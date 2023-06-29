@@ -13,4 +13,4 @@ A research about **Re-directed walking** in **Virtual Reality**, with the backgr
 
 ### Reference
 - [Oculus Reference](https://developer.oculus.com/documentation/unity/unity-ovrboundary/)
-- [VRTK]()
+- [VRTK](https://vrtoolkit.readme.io/docs)
