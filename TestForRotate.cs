@@ -3,28 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using Valve.VR;
 
 public class TestForRotate : MonoBehaviour
 {
     public GameObject VRController;
     public GameObject VRTracker;
-    public GameObject wallMarker;
 
     private float prevYRotation = 0.0f;
-    private Quaternion prevRotation;
 
-    private OVRBoundary ovrBoundary;
 
     void Start()
     {
         prevYRotation = VRController.transform.eulerAngles.y;
-        prevRotation = VRController.transform.rotation;
 
         get_boundary_vertices();
     }
 
     void Update()
-    {
+    {  
         Quaternion currentRotation = VRController.transform.rotation;
         
         float currentYRotation = VRController.transform.eulerAngles.y;
@@ -38,47 +35,94 @@ public class TestForRotate : MonoBehaviour
             deltaY += 360;
         }
 
-        // è®¡ç®—è™šæ‹Ÿè§†è§’éœ€è¦æ—‹è½¬çš„è§’åº¦
+        // ¼ÆËãĞéÄâÊÓ½ÇĞèÒªĞı×ªµÄ½Ç¶È
         float virtualRotation = deltaY / 2.0f;
-        float newY = VRTracker.transform.eulerAngles.y + virtualRotation;
 
-
-        // åˆ›å»ºä¸€ä¸ªæ–°çš„æ¬§æ‹‰è§’ï¼Œå¹¶å°†è™šæ‹Ÿæ—‹è½¬åº”ç”¨äºyè½´
-        Vector3 newEulerAngles = new Vector3(
-            VRTracker.transform.eulerAngles.x,
-            newY,
-            VRTracker.transform.eulerAngles.z
-        );
-
-        // å°†æ–°çš„æ¬§æ‹‰è§’åº”ç”¨äºVRTrackerå¯¹è±¡
-        VRTracker.transform.eulerAngles = newEulerAngles;
-
-        // æ›´æ–°prevYRotation
+        // ½«ĞÂµÄÅ·À­½ÇÓ¦ÓÃÓÚVRTracker¶ÔÏó
+        VRTracker.transform.RotateAround(VRController.transform.position, Vector3.up, virtualRotation);
+        
+        // ¸üĞÂprevYRotation
         prevYRotation = currentYRotation;
-        prevRotation = currentRotation;
     }
 
+    //public void get_boundary_vertices()
+    //{
+    //    List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
+    //    SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+
+    //    // make sure I actually have a subsystem loaded
+    //    if (subsystems.Count > 0)
+    //    {
+    //        // create a List of Vec3 that will be filled with the vertices
+    //        List<Vector3> boundaryPoints = new List<Vector3>();
+
+    //        // if this returns true, then the subsystems supports a boundary and it should have filled our list with them
+    //        if (subsystems[0].TryGetBoundaryPoints(boundaryPoints))
+    //        {
+    //            foreach (Vector3 pos in boundaryPoints)
+    //            {
+    //                // TODO: do something sensible with the points, not this
+    //                Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), pos, Quaternion.identity);
+    //                Debug.Log("GET POINT:" + pos);
+    //            }
+    //        }
+    //    }
+
+    //}
     public void get_boundary_vertices()
     {
-        List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
-        SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+        
 
-        // make sure I actually have a subsystem loaded
+        /*List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
+        SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+        Debug.Log(subsystems.Count);
         if (subsystems.Count > 0)
         {
-            // create a List of Vec3 that will be filled with the vertices
+            Debug.Log("haah");
             List<Vector3> boundaryPoints = new List<Vector3>();
 
-            // if this returns true, then the subsystems supports a boundary and it should have filled our list with them
             if (subsystems[0].TryGetBoundaryPoints(boundaryPoints))
             {
+                Debug.Log("wojinlaila");
                 foreach (Vector3 pos in boundaryPoints)
                 {
-                    // TODO: do something sensible with the points, not this
                     Instantiate(GameObject.CreatePrimitive(PrimitiveType.Cube), pos, Quaternion.identity);
-                    Debug.Log("GET POINT:"+pos);
+                    Debug.Log("GET POINT:" + pos);
                 }
             }
+            else
+            {
+                Debug.Log("Unable to get boundary points from XRInputSubsystem.");
+            }
         }
+        else
+        {
+            Debug.Log("No XRInputSubsystem instances found.");
+        }
+    }*/
+  
+    
+        Debug.Log("start Fuc boundary");
+
+        //if (OVRManager.boundary.GetConfigured())
+        //{
+            if (OVRManager.boundary != null)
+            {
+                    Vector3[] boundaryPoints = OVRManager.boundary.GetGeometry(OVRBoundary.BoundaryType.PlayArea); 
+            if (boundaryPoints.Length != 0)
+            {
+                Debug.Log("succeed");
+            }
+            }
+            else
+            {
+                Debug.Log("null pointer");
+            }
+           
+        //}
+        //else
+        //{
+        //    Debug.Log("not in");
+        //}
     }
 }
